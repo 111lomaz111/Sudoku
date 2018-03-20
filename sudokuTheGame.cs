@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace SudokuTheGame
 {
@@ -62,6 +63,7 @@ namespace SudokuTheGame
 
         private void bttStartGame_Click(object sender, EventArgs e)
         {
+            clearTextBoxes();
             switch (level)
             {
                 case 1:
@@ -74,7 +76,7 @@ namespace SudokuTheGame
                     break;
                 case 3:
                     //MessageBox.Show("Hard");
-                    fillTextBoxes(10);
+                    fillTextBoxes(20);
                     break;
                 default:
                     MessageBox.Show("Wybierz poziom trudności!");
@@ -104,16 +106,25 @@ namespace SudokuTheGame
             int i, j;
             for (int a = 0; a < amount; a++)
             {
-                i = randomNumber.Next(0, 9);
-                j = randomNumber.Next(0, 9);
+                i = randomNumber.Next(9);
+                j = randomNumber.Next(9);
                 textBoxes[i, j].Text = randomNumber.Next(1, 9).ToString();
                 textBoxes[i, j].ReadOnly = true;
             }
         }
 
-        private void sudokuTheGame_Load(object sender, EventArgs e)
+        //setting the value to null for every textbox to clear them after the last one game 
+        private void clearTextBoxes()
         {
-
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    textBoxes[i, j].Text = null;
+                    textBoxes[i, j].ReadOnly = false;
+                }
+            }
         }
     }
 }
+

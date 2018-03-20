@@ -31,7 +31,6 @@
             this.panel = new System.Windows.Forms.Panel();
             this.bttStartGame = new System.Windows.Forms.Button();
             this.cbLevels = new System.Windows.Forms.ComboBox();
-            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.SuspendLayout();
             // 
             // panel
@@ -65,30 +64,20 @@
             this.cbLevels.UseWaitCursor = true;
             this.cbLevels.SelectedIndexChanged += new System.EventHandler(this.cbLevels_SelectedIndexChanged);
             // 
-            // maskedTextBox1
-            // 
-            this.maskedTextBox1.Location = new System.Drawing.Point(54, 109);
-            this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(100, 20);
-            this.maskedTextBox1.TabIndex = 6;
-            this.maskedTextBox1.UseWaitCursor = true;
-            // 
             // sudokuTheGame
             // 
             this.AcceptButton = this.bttStartGame;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.maskedTextBox1);
+            this.ClientSize = new System.Drawing.Size(484, 276);
             this.Controls.Add(this.cbLevels);
             this.Controls.Add(this.bttStartGame);
             this.Controls.Add(this.panel);
             this.Name = "sudokuTheGame";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sudoku the Game";
             this.UseWaitCursor = true;
-            this.Load += new System.EventHandler(this.sudokuTheGame_Load);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -97,7 +86,6 @@
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.Button bttStartGame;
         private System.Windows.Forms.ComboBox cbLevels;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox1;
     }
 }
 
