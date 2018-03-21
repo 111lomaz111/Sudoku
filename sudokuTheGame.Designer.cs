@@ -44,7 +44,7 @@
             // 
             // bttStartGame
             // 
-            this.bttStartGame.Location = new System.Drawing.Point(139, 12);
+            this.bttStartGame.Location = new System.Drawing.Point(139, 10);
             this.bttStartGame.Name = "bttStartGame";
             this.bttStartGame.Size = new System.Drawing.Size(75, 23);
             this.bttStartGame.TabIndex = 4;
@@ -73,10 +73,10 @@
             this.Controls.Add(this.cbLevels);
             this.Controls.Add(this.bttStartGame);
             this.Controls.Add(this.panel);
+            this.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.Name = "sudokuTheGame";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Sudoku the Game";
-            this.UseWaitCursor = true;
             this.ResumeLayout(false);
 
         }

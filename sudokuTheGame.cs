@@ -7,7 +7,11 @@ namespace SudokuTheGame
 {
     public partial class sudokuTheGame : Form
     {
+
         TextBox[,] textBoxes = new TextBox[9, 9];
+
+        int[,] arrayGlobalValues = new int[9, 9];
+        int[,,] arrayLocalValues = new int[3, 3, 9]; // 3 = x,3 = y,9 = z -> which mean that we have 9 * 3x3 arrays 
 
         int level;
 
@@ -17,10 +21,10 @@ namespace SudokuTheGame
         {
             InitializeComponent();
             generateGrid();
-            guiTextes();
+            fillGUITexts();
         }
 
-        void guiTextes()
+        void fillGUITexts()
         {
             //add list to combo box for choose level
             cbLevels.Items.Add("Łatwy");
@@ -43,11 +47,25 @@ namespace SudokuTheGame
                     textBoxes[i, j].Top = positionY;
                     textBoxes[i, j].Left = positionX;
                     textBoxes[i, j].TextAlign = HorizontalAlignment.Center;
-                    //textBoxes[i, j].Text =  i.ToString() + j.ToString(); //show id equal to id in array on GUI
+                    textBoxes[i, j].MaxLength = 1; //allow to put only one value to the textbox
+                    textBoxes[i, j].KeyPress += new KeyPressEventHandler(checkValue);
+                    //textBoxes[i, j].Text =  i.ToString() + j.ToString(); //show id on GUI equal to id in array 
                     positionX = positionX + 26;
                 }
                 positionY = positionY + 26;
                 positionX = 0;
+            }
+        }
+
+        //is checking if pressed key is digit 1-9 or delete/backspace key 
+        private void checkValue(object sender, KeyPressEventArgs e)
+        {
+            char value = e.KeyChar;
+
+            if (!Char.IsDigit(value) || value == 48) //numbers are from ascii table // 8 is for backspace key, 48 is for 0 key bcs in sudoku i cannot put 0 to table
+            {
+                e.Handled = true;
+                MessageBox.Show("Mozesz wprowadzac tylko liczby!");
             }
         }
 
@@ -63,20 +81,20 @@ namespace SudokuTheGame
 
         private void bttStartGame_Click(object sender, EventArgs e)
         {
-            clearTextBoxes();
+            clearTextBoxesAndArrays();
             switch (level)
             {
                 case 1:
                     //MessageBox.Show("Easy");
-                    fillTextBoxes(70);
+                    generateRandomNumbForGame(70);
                     break;
                 case 2:
                     //MessageBox.Show("Medium");
-                    fillTextBoxes(50);
+                    generateRandomNumbForGame(50);
                     break;
                 case 3:
                     //MessageBox.Show("Hard");
-                    fillTextBoxes(20);
+                    generateRandomNumbForGame(20);
                     break;
                 default:
                     MessageBox.Show("Wybierz poziom trudności!");
@@ -101,20 +119,52 @@ namespace SudokuTheGame
             else return;
         }
 
-        private void fillTextBoxes(int amount)
+
+        //smth
+        private void generateRandomNumbForGame(int amount)
         {
             int i, j;
             for (int a = 0; a < amount; a++)
             {
                 i = randomNumber.Next(9);
                 j = randomNumber.Next(9);
-                textBoxes[i, j].Text = randomNumber.Next(1, 9).ToString();
+                int value = randomNumber.Next(1, 9);
+                //Console.WriteLine("Random number: " + value + " step: " + a);
+                
+                for(int ai = 0; ai < 9 ; ai++)
+                {
+                    for(int aj=0; aj < 9; aj++)
+                    {
+                        if(ai == i && aj == j) continue;
+
+                        if(ai == i)
+                        {
+                            //check x axis if exist equal value to this what was random drawn
+                            if()
+                            {
+                                
+                                ///TODO
+
+                            }
+                        }
+
+
+                    }
+                }
+                
+                textBoxes[i, j].Text = value.ToString();
                 textBoxes[i, j].ReadOnly = true;
             }
         }
 
-        //setting the value to null for every textbox to clear them after the last one game 
-        private void clearTextBoxes()
+        private void checkValueInArray()
+        {
+
+        }
+
+
+        //clearing game panel
+        private void clearTextBoxesAndArrays()
         {
             for (int i = 0; i < 9; i++)
             {
@@ -124,6 +174,9 @@ namespace SudokuTheGame
                     textBoxes[i, j].ReadOnly = false;
                 }
             }
+
+            Array.Clear(arrayGlobalValues, 0, Math.Min(81, arrayGlobalValues.Length));//setting all values in array to null
+            Array.Clear(arrayLocalValues, 0, Math.Min(81, arrayLocalValues.Length));//https://www.dotnetperls.com/array-clear
         }
     }
 }
