@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Threading;
 
 namespace SudokuTheGame
 {
@@ -11,11 +10,21 @@ namespace SudokuTheGame
         TextBox[,] textBoxes = new TextBox[9, 9];
 
         int[,] arrayGlobalValues = new int[9, 9];
-        int[,,] arrayLocalValues = new int[3, 3, 9]; // 3 = x,3 = y,9 = z -> which mean that we have 9 * 3x3 arrays 
 
         int level;
 
+        private bool block;
         Random randomNumber = new Random();
+
+        public bool GetBlock()
+        {
+            return block;
+        }
+
+        public void SetBlock(bool value)
+        {
+            block = value;
+        }
 
         public sudokuTheGame()
         {
@@ -48,24 +57,12 @@ namespace SudokuTheGame
                     textBoxes[i, j].Left = positionX;
                     textBoxes[i, j].TextAlign = HorizontalAlignment.Center;
                     textBoxes[i, j].MaxLength = 1; //allow to put only one value to the textbox
-                    textBoxes[i, j].KeyPress += new KeyPressEventHandler(checkValue);
+                    textBoxes[i, j].KeyPress += new KeyPressEventHandler(checkEnteredValue);
                     //textBoxes[i, j].Text =  i.ToString() + j.ToString(); //show id on GUI equal to id in array 
                     positionX = positionX + 26;
                 }
                 positionY = positionY + 26;
                 positionX = 0;
-            }
-        }
-
-        //is checking if pressed key is digit 1-9 or delete/backspace key 
-        private void checkValue(object sender, KeyPressEventArgs e)
-        {
-            char value = e.KeyChar;
-
-            if (!Char.IsDigit(value) || value == 48) //numbers are from ascii table // 8 is for backspace key, 48 is for 0 key bcs in sudoku i cannot put 0 to table
-            {
-                e.Handled = true;
-                MessageBox.Show("Mozesz wprowadzac tylko liczby!");
             }
         }
 
@@ -119,49 +116,114 @@ namespace SudokuTheGame
             else return;
         }
 
+        //is checking if pressed key is digit 1-9 or delete/backspace key and  if they not 
+        private void checkEnteredValue(object sender, KeyPressEventArgs e)
+        {
+            char value = e.KeyChar;
+
+            if (!Char.IsDigit(value) || value == 48) //numbers are from ascii table // 8 is for backspace key, 48 is for 0 key
+            {
+                e.Handled = true;
+                MessageBox.Show("Mozesz wprowadzac tylko liczby za zakresy 1-9!");
+            }
+        }
+
+        private void checkIfValueIsRepeating(int i, int j, int value)
+        {
+            //i is for x axis and j is for y axis
+            int startIPositionQuarter = 0;
+            int startJPositionQuarter = 0;
+
+            if (i < 3) startIPositionQuarter = 0;
+            else if (i >= 3 && i < 6) startIPositionQuarter = 3;
+            else if (i >= 6) startIPositionQuarter = 6;
+
+            if (i < 3) startJPositionQuarter = 0;
+            else if (i >= 3 && i < 6) startJPositionQuarter = 3;
+            else if (i >= 6) startJPositionQuarter = 6;
+
+            for (int ai = 0; ai < 9; ai++) //ai = array i; aj = array j
+            {
+                for (int aj = 0; aj < 9; aj++)
+                {
+
+                    if (ai == i && aj == j) continue;
+
+                    //check x axis if exist equal value to this random rolled
+                    if (ai == i)
+                    {
+                        if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text)) // IsNullOrWhiteSpace contains null, empty and whitespace
+                        {
+                            if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
+                            {
+                                Console.WriteLine("It`s the same value in line! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
+                                SetBlock(true);
+                                break;
+                            }
+                        }
+                    }
+
+                    //check y axis
+                    if (aj == j)
+                    {
+                        if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text))
+                        {
+                            if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
+                            {
+                                Console.WriteLine("It`s the same value in column! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
+                                SetBlock(true);
+                                break;
+                            }
+                        }
+                    }
+
+                    //check quarter
+                    if (ai >= startIPositionQuarter && ai < (startIPositionQuarter + 3) && aj >= startJPositionQuarter && aj < (startJPositionQuarter + 3))
+                    {
+                        if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text))
+                        {
+                            if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
+                            {
+                                Console.WriteLine("It`s the same value in quarter! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
+                                SetBlock(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //it`s adding value (generated randomly/entered by user) to text box and array 
+        private void addValueToTBAndArray(int i, int j, int value, int step)
+        {
+            textBoxes[i, j].Text = value.ToString();
+            textBoxes[i, j].ReadOnly = true;
+            Console.WriteLine("Random entered number: " + value + " step: " + step + " textbox ID: " + i + j);
+        }
 
         //smth
         private void generateRandomNumbForGame(int amount)
         {
-            int i, j;
+            int i, j, value;
+
             for (int a = 0; a < amount; a++)
             {
+                SetBlock(false);
                 i = randomNumber.Next(9);
                 j = randomNumber.Next(9);
-                int value = randomNumber.Next(1, 9);
-                //Console.WriteLine("Random number: " + value + " step: " + a);
-                
-                for(int ai = 0; ai < 9 ; ai++)
+                value = randomNumber.Next(1, 9);
+                Console.WriteLine("Randomly rolled number is: " + value);
+
+                checkIfValueIsRepeating(i,j,value);
+
+                if (GetBlock() == false)
                 {
-                    for(int aj=0; aj < 9; aj++)
-                    {
-                        if(ai == i && aj == j) continue;
-
-                        if(ai == i)
-                        {
-                            //check x axis if exist equal value to this what was random drawn
-                            if()
-                            {
-                                
-                                ///TODO
-
-                            }
-                        }
-
-
-                    }
+                    addValueToTBAndArray(i, j, value, amount);
                 }
-                
-                textBoxes[i, j].Text = value.ToString();
-                textBoxes[i, j].ReadOnly = true;
+                else amount++;
             }
         }
-
-        private void checkValueInArray()
-        {
-
-        }
-
 
         //clearing game panel
         private void clearTextBoxesAndArrays()
@@ -176,7 +238,6 @@ namespace SudokuTheGame
             }
 
             Array.Clear(arrayGlobalValues, 0, Math.Min(81, arrayGlobalValues.Length));//setting all values in array to null
-            Array.Clear(arrayLocalValues, 0, Math.Min(81, arrayLocalValues.Length));//https://www.dotnetperls.com/array-clear
         }
     }
 }
