@@ -202,7 +202,7 @@ namespace SudokuTheGame
             textBoxes[i, j].Text = value.ToString();
             textBoxes[i, j].ReadOnly = true;
             arrayGlobalValues[i, j] = value;
-            Console.WriteLine("Random entered number: " + value + " step: " + step + " textbox ID: " + i + j);
+            Console.WriteLine("Entered number: " + value + " step: " + step + " textbox ID: " + i + j);
         }
 
         //smth
@@ -279,8 +279,8 @@ namespace SudokuTheGame
         {
             try
             {
+                clearTextBoxesAndArrays();
                 string input = File.ReadAllText(@"myfile.stg");
-                char checkChar;
                 int value;
                 int i = 0, j = 0;
                 foreach (var row in input.Split('\n'))
@@ -288,13 +288,20 @@ namespace SudokuTheGame
                     j = 0;
                     foreach (var col in row.Trim().Split(' '))
                     {
-                        checkChar = Convert.ToChar(col.Trim()); //TO REPAIR
-                        if (!string.IsNullOrWhiteSpace((col.Trim())) && Char.IsDigit(checkChar))
+                       if (!string.IsNullOrWhiteSpace((col.Trim())))
                         {
-                            value = int.Parse(col.Trim());
+                            value = int.Parse(col.Trim()); //if we will have a error with parsing, that is sign that user propably put a letter or something other then digit to text file and message box will be showed
+
+                            SetBlock(false);
+
                             if (value != 0)
                             {
-                                textBoxes[i, j].Text = value.ToString();
+                                checkIfValueIsRepeating(i, j, value); //here we are checking if all digits entered by user are uniqe for col,row,quad3x3 if not, it`s setting to null
+
+                                if (GetBlock() == false)
+                                {
+                                    addValueToTBAndArray(i, j, value, 0);
+                                }
                             }
                             else
                             {
@@ -309,8 +316,8 @@ namespace SudokuTheGame
             }
             catch(Exception ex)
             {
-                MessageBox.Show("BLAD: " + ex);
-                MessageBox.Show("Niema pliku myflie.stg bądz jest źle sformatowany");
+                //MessageBox.Show("BLAD: " + ex);
+                MessageBox.Show("Niema pliku myflie.stg bądz jest źle sformatowany. Możesz używać tylko LICZB z zakresu 1-9");
             }
         }
 
