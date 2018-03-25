@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SudokuTheGame
@@ -36,9 +37,9 @@ namespace SudokuTheGame
         void fillGUITexts()
         {
             //add list to combo box for choose level
-            cbLevels.Items.Add("Łatwy");
-            cbLevels.Items.Add("Średni");
-            cbLevels.Items.Add("Trudny");
+            cbLevels.Items.Add("Łatwy");      //easy
+            cbLevels.Items.Add("Średni");    //medium
+            cbLevels.Items.Add("Trudny");   //hard
         }
 
         private void generateGrid()
@@ -51,7 +52,7 @@ namespace SudokuTheGame
                 for (int j = 0; j < 9; j++)
                 {
                     textBoxes[i, j] = new TextBox();
-                    panel.Controls.Add(textBoxes[i, j]);
+                    panelGame.Controls.Add(textBoxes[i, j]);
                     textBoxes[i, j].Width = 20;
                     textBoxes[i, j].Top = positionY;
                     textBoxes[i, j].Left = positionX;
@@ -63,6 +64,7 @@ namespace SudokuTheGame
                 }
                 positionY = positionY + 26;
                 positionX = 0;
+;
             }
         }
 
@@ -120,12 +122,12 @@ namespace SudokuTheGame
         private void checkEnteredValue(object sender, KeyPressEventArgs e)
         {
             char value = e.KeyChar;
-
             if (!Char.IsDigit(value) || value == 48) //numbers are from ascii table // 8 is for backspace key, 48 is for 0 key
             {
                 e.Handled = true;
                 MessageBox.Show("Mozesz wprowadzac tylko liczby za zakresy 1-9!");
             }
+            Console.WriteLine("Index of this textbox is " );
         }
 
         private void checkIfValueIsRepeating(int i, int j, int value)
@@ -177,14 +179,14 @@ namespace SudokuTheGame
                         }
                     }
 
-                    //check quarter
+                    //check square 3x3
                     if (ai >= startIPositionQuarter && ai < (startIPositionQuarter + 3) && aj >= startJPositionQuarter && aj < (startJPositionQuarter + 3))
                     {
                         if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text))
                         {
                             if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
                             {
-                                Console.WriteLine("It`s the same value in quarter! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
+                                Console.WriteLine("It`s the same value in square! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
                                 SetBlock(true);
                                 break;
                             }
@@ -199,6 +201,7 @@ namespace SudokuTheGame
         {
             textBoxes[i, j].Text = value.ToString();
             textBoxes[i, j].ReadOnly = true;
+            arrayGlobalValues[i, j] = value;
             Console.WriteLine("Random entered number: " + value + " step: " + step + " textbox ID: " + i + j);
         }
 
@@ -238,6 +241,82 @@ namespace SudokuTheGame
             }
 
             Array.Clear(arrayGlobalValues, 0, Math.Min(81, arrayGlobalValues.Length));//setting all values in array to null
+        }
+
+        private void bttSolveGame_Click(object sender, EventArgs e)
+        {
+            gameSolver();
+        }
+
+        private void gameSolver()
+        {
+            Console.WriteLine("Haha you are so funny ( ͡° ͜ʖ ͡°)");
+        }
+
+        private void bttSaveGame_Click(object sender, EventArgs e)
+        {
+            saveGameToFile();
+        }
+
+        private void saveGameToFile()
+        {
+            using (var sw = new StreamWriter(@"myfile.stg"))
+            {
+                for(int i = 0; i<9; i++)
+                {
+                    for(int j = 0; j<9; j++)
+                    {
+                        sw.Write(arrayGlobalValues[i, j] + " ");
+                    }
+                    sw.Write(Environment.NewLine); // \n isn`t working DNW
+                }
+                sw.Flush();
+                sw.Close();
+            }
+        }
+
+        private void loadSaveGame()
+        {
+            try
+            {
+                string input = File.ReadAllText(@"myfile.stg");
+                char checkChar;
+                int value;
+                int i = 0, j = 0;
+                foreach (var row in input.Split('\n'))
+                {
+                    j = 0;
+                    foreach (var col in row.Trim().Split(' '))
+                    {
+                        checkChar = Convert.ToChar(col.Trim()); //TO REPAIR
+                        if (!string.IsNullOrWhiteSpace((col.Trim())) && Char.IsDigit(checkChar))
+                        {
+                            value = int.Parse(col.Trim());
+                            if (value != 0)
+                            {
+                                textBoxes[i, j].Text = value.ToString();
+                            }
+                            else
+                            {
+                                textBoxes[i, j].Text = null;
+                            }
+                            Console.WriteLine(value);
+                        }
+                        j++;
+                    }
+                    i++;
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("BLAD: " + ex);
+                MessageBox.Show("Niema pliku myflie.stg bądz jest źle sformatowany");
+            }
+        }
+
+        private void bttLoadSaveGame_Click(object sender, EventArgs e)
+        {
+            loadSaveGame();
         }
     }
 }

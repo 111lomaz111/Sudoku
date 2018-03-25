@@ -28,29 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel = new System.Windows.Forms.Panel();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(sudokuTheGame));
+            this.panelGame = new System.Windows.Forms.Panel();
             this.bttStartGame = new System.Windows.Forms.Button();
             this.cbLevels = new System.Windows.Forms.ComboBox();
+            this.bttSolveGame = new System.Windows.Forms.Button();
+            this.bttSaveGame = new System.Windows.Forms.Button();
+            this.bttLoadSaveGame = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // panel
+            // panelGame
             // 
-            this.panel.Location = new System.Drawing.Point(220, 12);
-            this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(250, 250);
-            this.panel.TabIndex = 3;
-            this.panel.UseWaitCursor = true;
-            this.panel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Paint);
+            this.panelGame.BackColor = System.Drawing.Color.Transparent;
+            this.panelGame.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.panelGame.ForeColor = System.Drawing.SystemColors.Control;
+            this.panelGame.Location = new System.Drawing.Point(220, 12);
+            this.panelGame.Name = "panelGame";
+            this.panelGame.Size = new System.Drawing.Size(250, 250);
+            this.panelGame.TabIndex = 3;
+            this.panelGame.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Paint);
             // 
             // bttStartGame
             // 
-            this.bttStartGame.Location = new System.Drawing.Point(139, 10);
+            this.bttStartGame.Location = new System.Drawing.Point(139, 12);
             this.bttStartGame.Name = "bttStartGame";
-            this.bttStartGame.Size = new System.Drawing.Size(75, 23);
+            this.bttStartGame.Size = new System.Drawing.Size(75, 21);
             this.bttStartGame.TabIndex = 4;
             this.bttStartGame.Text = "Start!";
             this.bttStartGame.UseVisualStyleBackColor = true;
-            this.bttStartGame.UseWaitCursor = true;
             this.bttStartGame.Click += new System.EventHandler(this.bttStartGame_Click);
             // 
             // cbLevels
@@ -61,18 +66,52 @@
             this.cbLevels.Size = new System.Drawing.Size(121, 21);
             this.cbLevels.TabIndex = 5;
             this.cbLevels.Text = "Wybierz poziom gry!";
-            this.cbLevels.UseWaitCursor = true;
             this.cbLevels.SelectedIndexChanged += new System.EventHandler(this.cbLevels_SelectedIndexChanged);
+            // 
+            // bttSolveGame
+            // 
+            this.bttSolveGame.Location = new System.Drawing.Point(139, 39);
+            this.bttSolveGame.Name = "bttSolveGame";
+            this.bttSolveGame.Size = new System.Drawing.Size(75, 23);
+            this.bttSolveGame.TabIndex = 6;
+            this.bttSolveGame.Text = "Rozwiaz";
+            this.bttSolveGame.UseVisualStyleBackColor = true;
+            this.bttSolveGame.Click += new System.EventHandler(this.bttSolveGame_Click);
+            // 
+            // bttSaveGame
+            // 
+            this.bttSaveGame.Location = new System.Drawing.Point(139, 97);
+            this.bttSaveGame.Name = "bttSaveGame";
+            this.bttSaveGame.Size = new System.Drawing.Size(75, 23);
+            this.bttSaveGame.TabIndex = 7;
+            this.bttSaveGame.Text = "Zapisz";
+            this.bttSaveGame.UseVisualStyleBackColor = true;
+            this.bttSaveGame.Click += new System.EventHandler(this.bttSaveGame_Click);
+            // 
+            // bttLoadSaveGame
+            // 
+            this.bttLoadSaveGame.Location = new System.Drawing.Point(139, 68);
+            this.bttLoadSaveGame.Name = "bttLoadSaveGame";
+            this.bttLoadSaveGame.Size = new System.Drawing.Size(75, 23);
+            this.bttLoadSaveGame.TabIndex = 8;
+            this.bttLoadSaveGame.Text = "Wczytaj";
+            this.bttLoadSaveGame.UseVisualStyleBackColor = true;
+            this.bttLoadSaveGame.Click += new System.EventHandler(this.bttLoadSaveGame_Click);
             // 
             // sudokuTheGame
             // 
             this.AcceptButton = this.bttStartGame;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(484, 276);
+            this.Controls.Add(this.bttLoadSaveGame);
+            this.Controls.Add(this.bttSaveGame);
+            this.Controls.Add(this.bttSolveGame);
             this.Controls.Add(this.cbLevels);
             this.Controls.Add(this.bttStartGame);
-            this.Controls.Add(this.panel);
+            this.Controls.Add(this.panelGame);
             this.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.Name = "sudokuTheGame";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -83,9 +122,12 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panel;
+        private System.Windows.Forms.Panel panelGame;
         private System.Windows.Forms.Button bttStartGame;
         private System.Windows.Forms.ComboBox cbLevels;
+        private System.Windows.Forms.Button bttSolveGame;
+        private System.Windows.Forms.Button bttSaveGame;
+        private System.Windows.Forms.Button bttLoadSaveGame;
     }
 }
 
