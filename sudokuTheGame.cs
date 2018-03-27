@@ -15,17 +15,44 @@ namespace SudokuTheGame
         int level;
 
         private bool block;
+        private bool editedByUser;
+        private bool isSolving;
+
         Random randomNumber = new Random();
 
-        public bool GetBlock()
+        #region getters/setters
+
+        public bool getBlock()
         {
             return block;
         }
 
-        public void SetBlock(bool value)
+        public void setBlock(bool value)
         {
             block = value;
         }
+
+        public bool getEditedByUser()
+        {
+            return editedByUser;
+        }
+
+        public void setEditedByUser(bool value)
+        {
+            editedByUser = value;
+        }
+
+        public bool getIsSolving()
+        {
+            return isSolving;
+        }
+
+        public void setIsSolving(bool value)
+        {
+            isSolving = value;
+        }
+        
+        #endregion
 
         public sudokuTheGame()
         {
@@ -59,6 +86,7 @@ namespace SudokuTheGame
                     textBoxes[i, j].TextAlign = HorizontalAlignment.Center;
                     textBoxes[i, j].MaxLength = 1; //allow to put only one value to the textbox
                     textBoxes[i, j].KeyPress += new KeyPressEventHandler(checkEnteredValue);
+                    textBoxes[i, j].Name = i.ToString() + j.ToString();
                     //textBoxes[i, j].Text =  i.ToString() + j.ToString(); //show id on GUI equal to id in array 
                     positionX = positionX + 26;
                 }
@@ -85,15 +113,15 @@ namespace SudokuTheGame
             {
                 case 1:
                     //MessageBox.Show("Easy");
-                    generateRandomNumbForGame(70);
+                    generateRandomNumbForGame(50);
                     break;
                 case 2:
                     //MessageBox.Show("Medium");
-                    generateRandomNumbForGame(50);
+                    generateRandomNumbForGame(40);
                     break;
                 case 3:
                     //MessageBox.Show("Hard");
-                    generateRandomNumbForGame(20);
+                    generateRandomNumbForGame(30);
                     break;
                 default:
                     MessageBox.Show("Wybierz poziom trudności!");
@@ -118,20 +146,58 @@ namespace SudokuTheGame
             else return;
         }
 
-        //is checking if pressed key is digit 1-9 or delete/backspace key and  if they not 
-        private void checkEnteredValue(object sender, KeyPressEventArgs e)
+        //is checking if pressed key is digit 1-9 or delete/backspace key 
+        private void checkEnteredValue(object sendedObject, KeyPressEventArgs e)
         {
+            e.Handled = false;
+            setEditedByUser(false);
+
             char value = e.KeyChar;
-            if (!Char.IsDigit(value) || value == 48) //numbers are from ascii table // 8 is for backspace key, 48 is for 0 key
+            TextBox sendedTextBox = (TextBox)sendedObject;
+
+            //TODO REPAIR BACKSPACE KEY!!!
+
+            if (!Char.IsDigit(value) || value == 48 || value == 8) //numbers are from ascii table // 8 is for backspace key, 48 is for 0 key
             {
                 e.Handled = true;
-                MessageBox.Show("Mozesz wprowadzac tylko liczby za zakresy 1-9!");
+                MessageBox.Show("Mozesz wprowadzac tylko liczby za zakresu 1-9!");
             }
-            Console.WriteLine("Index of this textbox is " );
+            else
+            {
+                int i = int.Parse(sendedTextBox.Name[0].ToString());
+                int j = int.Parse(sendedTextBox.Name[1].ToString());
+                setBlock(false);
+
+                checkIfValueIsRepeating(i, j, value);
+
+                if(getBlock() == true)
+                {
+                    e.Handled = true;
+                }
+                else
+                {
+                    Console.WriteLine("Index of this textbox is " + i + "," + j);
+
+                    checkIfValueIsRepeating(i, j, int.Parse(value.ToString()));
+                    if (getBlock() == true || sendedTextBox.ReadOnly == true)
+                    {
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        e.Handled = false;
+                        setEditedByUser(true);
+                        addValueToTBAndArray(i, j, int.Parse(value.ToString()), 0);
+                    }
+                    Console.WriteLine(arrayGlobalValues);
+                }
+            }
         }
 
         private void checkIfValueIsRepeating(int i, int j, int value)
         {
+            setBlock(false);
+         
             //i is for x axis and j is for y axis
             int startIPositionQuarter = 0;
             int startJPositionQuarter = 0;
@@ -140,9 +206,9 @@ namespace SudokuTheGame
             else if (i >= 3 && i < 6) startIPositionQuarter = 3;
             else if (i >= 6) startIPositionQuarter = 6;
 
-            if (i < 3) startJPositionQuarter = 0;
-            else if (i >= 3 && i < 6) startJPositionQuarter = 3;
-            else if (i >= 6) startJPositionQuarter = 6;
+            if (j < 3) startJPositionQuarter = 0;
+            else if (j >= 3 && j < 6) startJPositionQuarter = 3;
+            else if (j >= 6) startJPositionQuarter = 6;
 
             for (int ai = 0; ai < 9; ai++) //ai = array i; aj = array j
             {
@@ -156,10 +222,10 @@ namespace SudokuTheGame
                     {
                         if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text)) // IsNullOrWhiteSpace contains null, empty and whitespace
                         {
-                            if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
+                            if (int.Parse(textBoxes[ai, aj].Text) == value)
                             {
                                 Console.WriteLine("It`s the same value in line! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
-                                SetBlock(true);
+                                setBlock(true);
                                 break;
                             }
                         }
@@ -170,10 +236,10 @@ namespace SudokuTheGame
                     {
                         if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text))
                         {
-                            if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
+                            if (int.Parse(textBoxes[ai, aj].Text) == value)
                             {
                                 Console.WriteLine("It`s the same value in column! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
-                                SetBlock(true);
+                                setBlock(true);
                                 break;
                             }
                         }
@@ -184,10 +250,10 @@ namespace SudokuTheGame
                     {
                         if (!string.IsNullOrWhiteSpace(textBoxes[ai, aj].Text))
                         {
-                            if (Convert.ToInt16(textBoxes[ai, aj].Text) == value)
+                            if (int.Parse(textBoxes[ai, aj].Text) == value)
                             {
                                 Console.WriteLine("It`s the same value in square! i,j: " + i + "," + j + "ai,aj: " + ai + "," + aj);
-                                SetBlock(true);
+                                setBlock(true);
                                 break;
                             }
                         }
@@ -200,19 +266,20 @@ namespace SudokuTheGame
         private void addValueToTBAndArray(int i, int j, int value, int step)
         {
             textBoxes[i, j].Text = value.ToString();
-            textBoxes[i, j].ReadOnly = true;
+            if(getEditedByUser() == false) textBoxes[i, j].Enabled = false;
+            if(getIsSolving() == true) textBoxes[i, j].Enabled = true;
             arrayGlobalValues[i, j] = value;
-            Console.WriteLine("Entered number: " + value + " step: " + step + " textbox ID: " + i + j);
+            Console.WriteLine("Entered number: " + value  + " to textbox ID: " + i + j + " step: " + step);
         }
 
         //smth
         private void generateRandomNumbForGame(int amount)
         {
-            int i, j, value;
+            int i, j, value, a;
 
-            for (int a = 0; a < amount; a++)
+            for (a = 0; a < amount; a++)
             {
-                SetBlock(false);
+                setBlock(false);
                 i = randomNumber.Next(9);
                 j = randomNumber.Next(9);
                 value = randomNumber.Next(1, 9);
@@ -220,7 +287,7 @@ namespace SudokuTheGame
 
                 checkIfValueIsRepeating(i,j,value);
 
-                if (GetBlock() == false)
+                if ((getBlock() == false && string.IsNullOrWhiteSpace(textBoxes[i, j].Text)))
                 {
                     addValueToTBAndArray(i, j, value, amount);
                 }
@@ -236,42 +303,66 @@ namespace SudokuTheGame
                 for (int j = 0; j < 9; j++)
                 {
                     textBoxes[i, j].Text = null;
-                    textBoxes[i, j].ReadOnly = false;
+                    textBoxes[i, j].Enabled = true;
                 }
             }
 
-            Array.Clear(arrayGlobalValues, 0, Math.Min(81, arrayGlobalValues.Length));//setting all values in array to null
+            setIsSolving(false);
+            setEditedByUser(false);
+            Array.Clear(arrayGlobalValues, 0, arrayGlobalValues.Length);//setting all values in array to null
+            
         }
 
-        private void bttSolveGame_Click(object sender, EventArgs e)
-        {
-            gameSolver();
-        }
-
+        // THIS IS SOME KIND OF JOKE REPAIR IT!!!
         private void gameSolver()
         {
-            Console.WriteLine("Haha you are so funny ( ͡° ͜ʖ ͡°)");
+            int value = 1, i, j;
+            int steps = 0;
+            setIsSolving(true);
+            {
+                foreach (TextBox textBox in textBoxes)
+                {
+                    i = int.Parse(textBox.Name[0].ToString());
+                    j = int.Parse(textBox.Name[1].ToString());
+
+                    if (String.IsNullOrWhiteSpace(textBox.Text.ToString()) || textBoxes[i, j].Enabled == true)
+                    {
+                        Console.WriteLine("Name of empty textbox: " + i + "," + j);
+                        steps = 0;
+                        do
+                        {
+                            steps++;
+                            checkIfValueIsRepeating(i, j, value);
+                            if (getBlock() == false)
+                            {
+                                addValueToTBAndArray(i, j, value, 0);
+                            }
+                            if (value > 8) value = 1;
+                            else value++;
+                            if (steps > 10) break;
+                        }
+                        while (String.IsNullOrWhiteSpace(textBox.Text.ToString()));
+                    }
+                }
+            }
         }
 
-        private void bttSaveGame_Click(object sender, EventArgs e)
-        {
-            saveGameToFile();
-        }
+        #region load/save game
 
         private void saveGameToFile()
         {
-            using (var sw = new StreamWriter(@"myfile.stg"))
+            using (var sw = new StreamWriter(@"mojagra.stg"))
             {
-                for(int i = 0; i<9; i++)
+                for(int i = 0; i <9; i++)
                 {
-                    for(int j = 0; j<9; j++)
+                    for(int j = 0; j <9; j++)
                     {
                         sw.Write(arrayGlobalValues[i, j] + " ");
                     }
                     sw.Write(Environment.NewLine); // \n isn`t working DNW
                 }
-                sw.Flush();
-                sw.Close();
+                sw.Flush();//clear stream writer buffer 
+                sw.Close();//close stream writer
             }
         }
 
@@ -280,7 +371,7 @@ namespace SudokuTheGame
             try
             {
                 clearTextBoxesAndArrays();
-                string input = File.ReadAllText(@"myfile.stg");
+                string input = File.ReadAllText(@"mojagra.stg");
                 int value;
                 int i = 0, j = 0;
                 foreach (var row in input.Split('\n'))
@@ -290,15 +381,16 @@ namespace SudokuTheGame
                     {
                        if (!string.IsNullOrWhiteSpace((col.Trim())))
                         {
+
                             value = int.Parse(col.Trim()); //if we will have a error with parsing, that is sign that user propably put a letter or something other then digit to text file and message box will be showed
 
-                            SetBlock(false);
+                            setBlock(false);
 
                             if (value != 0)
                             {
                                 checkIfValueIsRepeating(i, j, value); //here we are checking if all digits entered by user are uniqe for col,row,quad3x3 if not, it`s setting to null
 
-                                if (GetBlock() == false)
+                                if (getBlock() == false && value.ToString().Length == 1)
                                 {
                                     addValueToTBAndArray(i, j, value, 0);
                                 }
@@ -317,13 +409,43 @@ namespace SudokuTheGame
             catch(Exception ex)
             {
                 //MessageBox.Show("BLAD: " + ex);
-                MessageBox.Show("Niema pliku myflie.stg bądz jest źle sformatowany. Możesz używać tylko LICZB z zakresu 1-9");
+                MessageBox.Show("Niema pliku mySaveGame.stg bądz jest źle sformatowany.\nMożesz używać tylko LICZB z zakresu 1-9");
             }
+        }
+
+        #endregion
+
+        #region button on click void`s
+
+        private void bttSaveGame_Click(object sender, EventArgs e)
+        {
+            saveGameToFile();
         }
 
         private void bttLoadSaveGame_Click(object sender, EventArgs e)
         {
             loadSaveGame();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            takeScreenShot();
+        }
+
+        private void bttSolveGame_Click(object sender, EventArgs e)
+        {
+            gameSolver();
+        }
+
+        #endregion
+
+        private void takeScreenShot()
+        {
+            Bitmap bmp = new Bitmap(panelGame.Width, panelGame.Height);
+            panelGame.BackColor = Color.White;
+            panelGame.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+            panelGame.BackColor = Color.Transparent;
+            bmp.Save(@"MojaGra.bmp");
         }
     }
 }
