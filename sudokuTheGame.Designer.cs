@@ -37,6 +37,7 @@
             this.bttSaveGame = new System.Windows.Forms.Button();
             this.bttLoadSaveGame = new System.Windows.Forms.Button();
             this.bttTakeScreenshot = new System.Windows.Forms.Button();
+            this.bttDEBUG = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // panelGame
@@ -127,14 +128,25 @@
             this.bttTakeScreenshot.UseVisualStyleBackColor = true;
             this.bttTakeScreenshot.Click += new System.EventHandler(this.button1_Click);
             // 
+            // bttDEBUG
+            // 
+            this.bttDEBUG.Location = new System.Drawing.Point(139, 154);
+            this.bttDEBUG.Name = "bttDEBUG";
+            this.bttDEBUG.Size = new System.Drawing.Size(75, 23);
+            this.bttDEBUG.TabIndex = 10;
+            this.bttDEBUG.Text = "DEBUG";
+            this.bttDEBUG.UseVisualStyleBackColor = true;
+            this.bttDEBUG.Visible = false;
+            this.bttDEBUG.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bttDEBUG_MouseClick);
+            // 
             // sudokuTheGame
             // 
             this.AcceptButton = this.bttStartGame;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(460, 254);
+            this.Controls.Add(this.bttDEBUG);
             this.Controls.Add(this.bttTakeScreenshot);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.bttLoadSaveGame);
@@ -144,9 +156,11 @@
             this.Controls.Add(this.bttStartGame);
             this.Controls.Add(this.panelGame);
             this.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximumSize = new System.Drawing.Size(476, 293);
+            this.MinimumSize = new System.Drawing.Size(476, 293);
             this.Name = "sudokuTheGame";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Sudoku the Game";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -162,6 +176,7 @@
         private System.Windows.Forms.Button bttLoadSaveGame;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button bttTakeScreenshot;
+        private System.Windows.Forms.Button bttDEBUG;
     }
 }
 
