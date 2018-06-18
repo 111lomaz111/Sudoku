@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SudokuTheGame
@@ -12,8 +14,7 @@ namespace SudokuTheGame
 
         int[,] arrayGlobalValues = new int[9, 9];
 
-        int level;
-        int blockedValue = 0;
+        int level, steps=0,amount;
         private bool isSolving, editedByUser;
 
         Random randomNumber = new Random();
@@ -83,7 +84,6 @@ namespace SudokuTheGame
                 }
                 positionY = positionY + 26;
                 positionX = 0;
-;
             }
         }
 
@@ -95,29 +95,6 @@ namespace SudokuTheGame
             g.DrawLine(p, 153, 0, 153, 228);
             g.DrawLine(p, 0, 75, 228, 75);
             g.DrawLine(p, 0, 153, 228, 153);
-        }
-
-        private void bttStartGame_Click(object sender, EventArgs e)
-        {
-            clearTextBoxesAndArrays();
-            switch (level)
-            {
-                case 1:
-                    //MessageBox.Show("Easy");
-                    generateRandomNumbForGame(50);
-                    break;
-                case 2:
-                    //MessageBox.Show("Medium");
-                    generateRandomNumbForGame(40);
-                    break;
-                case 3:
-                    //MessageBox.Show("Hard");
-                    generateRandomNumbForGame(30);
-                    break;
-                default:
-                    MessageBox.Show("Wybierz poziom trudności!");
-                    break;
-            }
         }
 
         private void cbLevels_SelectedIndexChanged(object sender, EventArgs e)
@@ -246,23 +223,46 @@ namespace SudokuTheGame
         }
 
         //smth
-        private void generateRandomNumbForGame(int amount)
+        private void generateRandomNumbForGame()
         {
-            int i, j, value, a;
-
-            for (a = 0; a < amount; a++)
+            var thread = new Thread(start =>
             {
-                i = randomNumber.Next(9);
-                j = randomNumber.Next(9);
-                value = randomNumber.Next(1, 9);
-                Console.WriteLine("Randomly rolled number is: " + value);                
 
-                if (!isValueRepeating(i, j, value) && string.IsNullOrWhiteSpace(textBoxes[i, j].Text))
+                int startAmount = amount;
+                int i, j, value;
+
+                for (int x = 0; x < startAmount; x++)
                 {
-                    addValueToTBAndArray(i, j, value, amount);
+                    i = randomNumber.Next(9);
+                    j = randomNumber.Next(9);
+                    value = randomNumber.Next(1, 9);
+                    Console.WriteLine("Randomly rolled number is: " + value);
+
+                    if (!isValueRepeating(i, j, value) && string.IsNullOrWhiteSpace(textBoxes[i, j].Text))
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            addValueToTBAndArray(i, j, value, startAmount);
+                        }));
+                    }
+                    else startAmount++;
                 }
-                else amount++;
-            }
+                /* //check if it is possible to solve
+                if (gameSolver(0,-1))
+                {
+                    clearEnabledFields();
+                }
+                else
+                {
+                    clearTextBoxesAndArrays();
+                    Invoke(new Action(() =>
+                    {
+                        generateRandomNumbForGame();
+                    }));
+                }
+                */
+            });
+            thread.Start();
         }
 
         //clearing game panel
@@ -296,149 +296,47 @@ namespace SudokuTheGame
             }
         }
 
-        private void gameSolver(int startI, int startJ, int startValue)
+        //###########################################################################################################################################################################
+
+        private bool gameSolver(int solverI, int solverJ)
         {
-            int value = startValue;
-            int steps;
+                setIsSolving(true);
 
-            setIsSolving(true);
+                steps++;
+                solverJ++;
 
-            for (int i = startI; i < 9; ++i)
-            {
-                for (int j = startJ; j < 9; ++j)
+                if (solverJ > 8)
                 {
-                    if (textBoxes[i, j].Enabled == true)
-                    {
-                        steps = 0;
-                        do
-                        {
-                            steps++;
-                            value++;
-
-                            if (value > 9) value = 1;
-
-                            if (!isValueRepeating(i, j, value) && value != blockedValue)
-                            {
-                                addValueToTBAndArray(i, j, value, 0);
-                                blockedValue = 0;
-                                MessageBox.Show("DONE");
-                                break;
-                            }
-
-                            if (steps > 8)
-                            {
-                                do
-                                {
-                                    j--;
-
-                                    if (j < 0)
-                                    {
-                                        j = 8;
-                                        if (i > 0) i--;
-                                        else i = 0;
-                                    }
-
-                                    if (textBoxes[i, j].Enabled == true)
-                                    {
-                                        if (!String.IsNullOrWhiteSpace(textBoxes[i, j].Text)) blockedValue = int.Parse(textBoxes[i, j].Text);
-                                        else blockedValue = 0;
-
-                                        textBoxes[i, j].Text = null;
-
-                                        Console.WriteLine("Steps: " + steps);
-                                        gameSolver(i, j, blockedValue);
-                                    }
-                                }
-                                while (textBoxes[i, j].Enabled == false);
-                            }
-                        }
-                        while (String.IsNullOrWhiteSpace(textBoxes[i, j].Text));
-                    }
+                    solverJ = 0;
+                    solverI++;
+                    if (solverI > 8) return true;
                 }
-            }
-        }
 
-
-        /* // THIS IS SOME KIND OF JOKE REPAIR IT!!!
-
-        private void gameSolver(int otherI, int otherJ, int startValue)
-        {
-            int steps;
-            int value = startValue;
-
-            setIsSolving(true);
-            {
-                for (int i = otherI; i < 9; i++)
+                if (!textBoxes[solverI, solverJ].Enabled)
                 {
-                    for (int j = otherJ; j < 9; j++)
+                    return this.gameSolver(solverI, solverJ);
+                }
+                else
+                {
+                    for (int solverValue = 1; solverValue < 10; solverValue++)
                     {
-                        if (String.IsNullOrWhiteSpace(textBoxes[i, j].Text.ToString()) || textBoxes[i, j].Enabled)
+                        textBoxes[solverI, solverJ].Text = solverValue.ToString();
+                        if (!isValueRepeating(solverI, solverJ, solverValue))
                         {
-                            Console.WriteLine("Name of empty/editable textbox: " + i + "," + j);
-                            steps = 0;
-                            do
+                            if (this.gameSolver(solverI, solverJ))
                             {
-                                steps++;
-                                value++;
-                                if (value > 9) value = 1;
-
-                                if (!isValueRepeating(i, j, value))
-                                {
-                                    addValueToTBAndArray(i, j, value, 0);
-                                    MessageBox.Show("DONE");
-                                    if (j < 9) j++;
-                                    else if (j == 9)
-                                    {
-                                        j = 0;
-                                        i++;
-                                    }
-                                    else if (i == 9 && j == 9)
-                                    {
-                                        MessageBox.Show("OVER");
-                                        return;
-                                    }
-                                    gameSolver(i, j, value);
-                                    break;
-                                }
-
-                                if (steps > 9)
-                                {
-                                    startValue = value;
-
-                                    if (j == 0 && i >= 0)
-                                    {
-                                        j = 8;
-                                        if (i > 0) i--;
-                                    }
-                                    else if (j > 0) j--;
-
-                                    value = int.Parse(textBoxes[i, j].Text.ToString());
-                                    textBoxes[i, j].Text = null;
-
-                                    gameSolver(i, j, value);
-                                }
-                            }
-                            while (String.IsNullOrWhiteSpace(textBoxes[i, j].Text.ToString()));
-                        }
-                        else
-                        {
-                            if (j < 9) j++;
-                            else if (j == 9)
-                            {
-                                j = 0;
-                                i++;
-                            }
-                            else if (i >= 9 && j >= 9)
-                            {
-                                MessageBox.Show("IT`S OVER");
-                                return;
+                                return true;
                             }
                         }
                     }
+
+                    textBoxes[solverI, solverJ].Text = null;
+                    Console.WriteLine("Number of steps: " + steps);
+
+                    setIsSolving(false);
+                    return false;
                 }
-            }
         }
-        */
 
         #region load/save game
 
@@ -528,13 +426,42 @@ namespace SudokuTheGame
 
         private void bttSolveGame_Click(object sender, EventArgs e)
         {
-            gameSolver(0,0,0);
+            gameSolver(0,-1);
         }
 
         private void bttDEBUG_MouseClick(object sender, MouseEventArgs e)
         {
             clearEnabledFields();
         }
+
+        private void bttStartGame_Click(object sender, EventArgs e)
+        {
+            clearTextBoxesAndArrays();
+            setIsSolving(false);
+            steps = 0;
+            switch (level)
+            {
+                case 1:
+                    //MessageBox.Show("Easy");
+                    amount = 50;
+                    generateRandomNumbForGame();
+                    return;
+                case 2:
+                    //MessageBox.Show("Medium");
+                    amount = 40;
+                    generateRandomNumbForGame();
+                    return;
+                case 3:
+                    //MessageBox.Show("Hard");
+                    amount = 30;
+                    generateRandomNumbForGame();
+                    return;
+                default:
+                    MessageBox.Show("Wybierz poziom trudności!");
+                    return;
+            }
+        }
+
         #endregion
 
 
