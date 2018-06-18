@@ -13,7 +13,7 @@ namespace SudokuTheGame
         int[,] arrayGlobalValues = new int[9, 9];
 
         int level;
-        int startValue = 0;
+        int blockedValue = 0;
         private bool isSolving, editedByUser;
 
         Random randomNumber = new Random();
@@ -242,7 +242,7 @@ namespace SudokuTheGame
             if (getEditedByUser() == false) textBoxes[i, j].Enabled = false;
             if (getIsSolving() == true) textBoxes[i, j].Enabled = true;
 
-            Console.WriteLine("Entered number: " + value  + " to textbox ID: " + i + j + " step: " + step);
+            Console.WriteLine("Entered number: " + value  + " to textbox ID: " + i + "," + j + " step: " + step);
         }
 
         //smth
@@ -296,51 +296,149 @@ namespace SudokuTheGame
             }
         }
 
-        // THIS IS SOME KIND OF JOKE REPAIR IT!!!
-
-        private void gameSolver()
+        private void gameSolver(int startI, int startJ, int startValue)
         {
-            int i, j, steps;
             int value = startValue;
+            int steps;
 
             setIsSolving(true);
-            {
-                foreach (TextBox textBox in textBoxes)
-                {
-                    i = int.Parse(textBox.Name[0].ToString());
-                    j = int.Parse(textBox.Name[1].ToString());
 
-                    if (String.IsNullOrWhiteSpace(textBox.Text.ToString()) || textBoxes[i, j].Enabled == true)
+            for (int i = startI; i < 9; ++i)
+            {
+                for (int j = startJ; j < 9; ++j)
+                {
+                    if (textBoxes[i, j].Enabled == true)
                     {
-                        Console.WriteLine("Name of empty/editable textbox: " + i + "," + j);
                         steps = 0;
                         do
                         {
                             steps++;
-                            if (value > 8) value = 1;
-                            else value++;
+                            value++;
 
-                            if (!isValueRepeating(i, j, value))
+                            if (value > 9) value = 1;
+
+                            if (!isValueRepeating(i, j, value) && value != blockedValue)
                             {
                                 addValueToTBAndArray(i, j, value, 0);
+                                blockedValue = 0;
+                                MessageBox.Show("DONE");
+                                break;
                             }
-                            if (steps > 10)
+
+                            if (steps > 8)
                             {
-                                //break;
-                                
+                                do
+                                {
+                                    j--;
 
+                                    if (j < 0)
+                                    {
+                                        j = 8;
+                                        if (i > 0) i--;
+                                        else i = 0;
+                                    }
 
-                                if (startValue > 8) startValue = 1;
-                                else startValue++;
-                                gameSolver();
+                                    if (textBoxes[i, j].Enabled == true)
+                                    {
+                                        if (!String.IsNullOrWhiteSpace(textBoxes[i, j].Text)) blockedValue = int.Parse(textBoxes[i, j].Text);
+                                        else blockedValue = 0;
+
+                                        textBoxes[i, j].Text = null;
+
+                                        Console.WriteLine("Steps: " + steps);
+                                        gameSolver(i, j, blockedValue);
+                                    }
+                                }
+                                while (textBoxes[i, j].Enabled == false);
                             }
                         }
-                        while (String.IsNullOrWhiteSpace(textBox.Text.ToString()));
+                        while (String.IsNullOrWhiteSpace(textBoxes[i, j].Text));
                     }
                 }
-                
             }
         }
+
+
+        /* // THIS IS SOME KIND OF JOKE REPAIR IT!!!
+
+        private void gameSolver(int otherI, int otherJ, int startValue)
+        {
+            int steps;
+            int value = startValue;
+
+            setIsSolving(true);
+            {
+                for (int i = otherI; i < 9; i++)
+                {
+                    for (int j = otherJ; j < 9; j++)
+                    {
+                        if (String.IsNullOrWhiteSpace(textBoxes[i, j].Text.ToString()) || textBoxes[i, j].Enabled)
+                        {
+                            Console.WriteLine("Name of empty/editable textbox: " + i + "," + j);
+                            steps = 0;
+                            do
+                            {
+                                steps++;
+                                value++;
+                                if (value > 9) value = 1;
+
+                                if (!isValueRepeating(i, j, value))
+                                {
+                                    addValueToTBAndArray(i, j, value, 0);
+                                    MessageBox.Show("DONE");
+                                    if (j < 9) j++;
+                                    else if (j == 9)
+                                    {
+                                        j = 0;
+                                        i++;
+                                    }
+                                    else if (i == 9 && j == 9)
+                                    {
+                                        MessageBox.Show("OVER");
+                                        return;
+                                    }
+                                    gameSolver(i, j, value);
+                                    break;
+                                }
+
+                                if (steps > 9)
+                                {
+                                    startValue = value;
+
+                                    if (j == 0 && i >= 0)
+                                    {
+                                        j = 8;
+                                        if (i > 0) i--;
+                                    }
+                                    else if (j > 0) j--;
+
+                                    value = int.Parse(textBoxes[i, j].Text.ToString());
+                                    textBoxes[i, j].Text = null;
+
+                                    gameSolver(i, j, value);
+                                }
+                            }
+                            while (String.IsNullOrWhiteSpace(textBoxes[i, j].Text.ToString()));
+                        }
+                        else
+                        {
+                            if (j < 9) j++;
+                            else if (j == 9)
+                            {
+                                j = 0;
+                                i++;
+                            }
+                            else if (i >= 9 && j >= 9)
+                            {
+                                MessageBox.Show("IT`S OVER");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        */
 
         #region load/save game
 
@@ -430,7 +528,7 @@ namespace SudokuTheGame
 
         private void bttSolveGame_Click(object sender, EventArgs e)
         {
-            gameSolver();
+            gameSolver(0,0,0);
         }
 
         private void bttDEBUG_MouseClick(object sender, MouseEventArgs e)
