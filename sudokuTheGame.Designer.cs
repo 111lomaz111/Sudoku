@@ -68,7 +68,7 @@
             this.bttStartGame.Location = new System.Drawing.Point(139, 10);
             this.bttStartGame.Name = "bttStartGame";
             this.bttStartGame.Size = new System.Drawing.Size(75, 22);
-            this.bttStartGame.TabIndex = 4;
+            this.bttStartGame.TabIndex = 0;
             this.bttStartGame.Text = "START!";
             this.bttStartGame.UseVisualStyleBackColor = true;
             this.bttStartGame.Click += new System.EventHandler(this.bttStartGame_Click);
@@ -87,10 +87,10 @@
             // bttSolveGame
             // 
             this.bttSolveGame.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.bttSolveGame.Location = new System.Drawing.Point(139, 38);
+            this.bttSolveGame.Location = new System.Drawing.Point(139, 125);
             this.bttSolveGame.Name = "bttSolveGame";
             this.bttSolveGame.Size = new System.Drawing.Size(75, 23);
-            this.bttSolveGame.TabIndex = 6;
+            this.bttSolveGame.TabIndex = 4;
             this.bttSolveGame.Text = "ROZWIAZ";
             this.bttSolveGame.UseVisualStyleBackColor = true;
             this.bttSolveGame.Click += new System.EventHandler(this.bttSolveGame_Click);
@@ -98,10 +98,10 @@
             // bttSaveGame
             // 
             this.bttSaveGame.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.bttSaveGame.Location = new System.Drawing.Point(139, 96);
+            this.bttSaveGame.Location = new System.Drawing.Point(139, 67);
             this.bttSaveGame.Name = "bttSaveGame";
             this.bttSaveGame.Size = new System.Drawing.Size(75, 23);
-            this.bttSaveGame.TabIndex = 7;
+            this.bttSaveGame.TabIndex = 2;
             this.bttSaveGame.Text = "ZAPISZ";
             this.bttSaveGame.UseVisualStyleBackColor = true;
             this.bttSaveGame.Click += new System.EventHandler(this.bttSaveGame_Click);
@@ -109,10 +109,10 @@
             // bttLoadSaveGame
             // 
             this.bttLoadSaveGame.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.bttLoadSaveGame.Location = new System.Drawing.Point(139, 67);
+            this.bttLoadSaveGame.Location = new System.Drawing.Point(139, 38);
             this.bttLoadSaveGame.Name = "bttLoadSaveGame";
             this.bttLoadSaveGame.Size = new System.Drawing.Size(75, 23);
-            this.bttLoadSaveGame.TabIndex = 8;
+            this.bttLoadSaveGame.TabIndex = 1;
             this.bttLoadSaveGame.Text = "WCZYTAJ";
             this.bttLoadSaveGame.UseVisualStyleBackColor = true;
             this.bttLoadSaveGame.Click += new System.EventHandler(this.bttLoadSaveGame_Click);
@@ -120,24 +120,25 @@
             // bttTakeScreenshot
             // 
             this.bttTakeScreenshot.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.bttTakeScreenshot.Location = new System.Drawing.Point(139, 125);
+            this.bttTakeScreenshot.Location = new System.Drawing.Point(139, 96);
             this.bttTakeScreenshot.Name = "bttTakeScreenshot";
             this.bttTakeScreenshot.Size = new System.Drawing.Size(75, 23);
-            this.bttTakeScreenshot.TabIndex = 0;
+            this.bttTakeScreenshot.TabIndex = 3;
             this.bttTakeScreenshot.Text = "ZDJECIE";
             this.bttTakeScreenshot.UseVisualStyleBackColor = true;
-            this.bttTakeScreenshot.Click += new System.EventHandler(this.button1_Click);
+            this.bttTakeScreenshot.Click += new System.EventHandler(this.bttTakeScreenShot_Click);
             // 
             // bttDEBUG
             // 
             this.bttDEBUG.Location = new System.Drawing.Point(139, 154);
             this.bttDEBUG.Name = "bttDEBUG";
             this.bttDEBUG.Size = new System.Drawing.Size(75, 23);
-            this.bttDEBUG.TabIndex = 10;
+            this.bttDEBUG.TabIndex = 5;
             this.bttDEBUG.Text = "DEBUG";
             this.bttDEBUG.UseVisualStyleBackColor = true;
             this.bttDEBUG.Visible = false;
-            this.bttDEBUG.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bttDEBUG_MouseClick);
+            this.bttDEBUG.Click += new System.EventHandler(this.bttDEBUG_Click);
+            this.bttDEBUG.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bttDEBUG_Click);
             // 
             // sudokuTheGame
             // 
@@ -146,11 +147,11 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(460, 254);
-            this.Controls.Add(this.bttDEBUG);
-            this.Controls.Add(this.bttTakeScreenshot);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.bttLoadSaveGame);
             this.Controls.Add(this.bttSaveGame);
+            this.Controls.Add(this.bttTakeScreenshot);
+            this.Controls.Add(this.bttDEBUG);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.bttSolveGame);
             this.Controls.Add(this.cbLevels);
             this.Controls.Add(this.bttStartGame);
