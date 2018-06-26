@@ -38,6 +38,7 @@
             this.bttLoadSaveGame = new System.Windows.Forms.Button();
             this.bttTakeScreenshot = new System.Windows.Forms.Button();
             this.bttDEBUG = new System.Windows.Forms.Button();
+            this.checkBoxWizualizacja = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // panelGame
@@ -140,6 +141,17 @@
             this.bttDEBUG.Click += new System.EventHandler(this.bttDEBUG_Click);
             this.bttDEBUG.MouseClick += new System.Windows.Forms.MouseEventHandler(this.bttDEBUG_Click);
             // 
+            // checkBoxWizualizacja
+            // 
+            this.checkBoxWizualizacja.AutoSize = true;
+            this.checkBoxWizualizacja.Location = new System.Drawing.Point(53, 129);
+            this.checkBoxWizualizacja.Name = "checkBoxWizualizacja";
+            this.checkBoxWizualizacja.Size = new System.Drawing.Size(85, 17);
+            this.checkBoxWizualizacja.TabIndex = 10;
+            this.checkBoxWizualizacja.Text = "Wizualizacja";
+            this.checkBoxWizualizacja.UseVisualStyleBackColor = true;
+            this.checkBoxWizualizacja.CheckedChanged += new System.EventHandler(this.checkBoxWizualizacja_CheckedChanged);
+            // 
             // sudokuTheGame
             // 
             this.AcceptButton = this.bttStartGame;
@@ -147,6 +159,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(460, 254);
+            this.Controls.Add(this.checkBoxWizualizacja);
             this.Controls.Add(this.bttLoadSaveGame);
             this.Controls.Add(this.bttSaveGame);
             this.Controls.Add(this.bttTakeScreenshot);
@@ -178,6 +191,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button bttTakeScreenshot;
         private System.Windows.Forms.Button bttDEBUG;
+        private System.Windows.Forms.CheckBox checkBoxWizualizacja;
     }
 }
 

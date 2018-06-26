@@ -14,7 +14,7 @@ namespace SudokuTheGame
 
         int[,] arrayGlobalValues = new int[9, 9];
         int level, steps = 0, allAttemps = 0;
-        private bool isSolving, wodotryski;
+        private bool isSolving, visualisation;
 
         Random randomNumber = new Random();
 
@@ -23,10 +23,10 @@ namespace SudokuTheGame
             InitializeComponent();
             generateGrid();
             fillGUITexts();
+            checkBoxWizualizacja.Checked = true;
 #if DEBUG
             bttDEBUG.Visible = true;
 #endif
-            wodotryski = true;
         }
 
         void fillGUITexts()
@@ -298,8 +298,6 @@ namespace SudokuTheGame
                         Invoke(new Action(() =>
                         {
                             textBoxes[solverI, solverJ].Text = solverValue.ToString();
-
-
                             Console.WriteLine("Number of steps: " + steps++);
                         }));
 
@@ -408,21 +406,36 @@ namespace SudokuTheGame
 
         private void bttSolveGame_Click(object sender, EventArgs e)
         {
-#if DEBUG
-            var gameSolverThread = new Thread(start =>
-             {
+
+            if (visualisation)
+            {
+                var gameSolverThread = new Thread(start =>
+                {
+                    steps = 0;
+                    isSolving = true;
+                    gameSolver(0, -1);
+                });
+                gameSolverThread.Name = "Game Solver Thread";
+                gameSolverThread.Start();
+            }
+            else
+            {
                 steps = 0;
                 isSolving = true;
-                gameSolver(0, -1); 
-             });
-             gameSolverThread.Name = "Game Solver Thread";
-             gameSolverThread.Start();
-#else
-            steps = 0;
-            isSolving = true;
-            gameSolver(0, -1);
-#endif
+                gameSolver(0, -1);
+            }
+        }
 
+        private void checkBoxWizualizacja_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBoxWizualizacja.Checked == true)
+            {
+                visualisation = true;
+            }
+            else
+            {
+                visualisation = false;
+            }
         }
 
         private void bttDEBUG_Click(object sender, EventArgs e)
